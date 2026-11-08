@@ -7,9 +7,9 @@
   "documentation": "https://ha-synology-srm-router.eize.dev/",
   "integration_type": "hub",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/eizedev/ha-synology-srm-router/issues",
+  "issue_tracker": "https://github.com/domdus/ha-synology-srm-router/issues",
   "loggers": ["aiosynologysrm"],
   "requirements": ["aiosynologysrm==0.10.0"],
-  "version": "0.5.1",
+  "version": "0.6.0",
   "zeroconf": [{ "type": "_http._tcp.local.", "properties": { "vendor": "synology*" } }]
 }

@@ -39,7 +39,8 @@ again whenever the dialogs or pages change; it needs an installed Edge or Chrome
 
 ## Rules for changes
 
-- **Read only.** The integration never changes router settings.
+- **Read only, except restarts.** The integration never changes router settings; the restart
+  buttons are its only requests that change anything (`actions.py`).
 - **Texts in two languages.** Every user-facing text goes into `strings.json`,
   `translations/en.json` and `translations/de.json`.
 - **No personal data** in code, docs or test data.

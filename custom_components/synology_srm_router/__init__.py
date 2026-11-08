@@ -1,4 +1,4 @@
-"""The Synology SRM Router integration: Synology routers and access points, read only."""
+"""The Synology SRM Router integration: Synology routers and access points; restart on request."""
 
 from __future__ import annotations
 
@@ -49,7 +49,14 @@ from .coordinator import (
 from .repairs import delete_risk_issues, update_risk_issues
 
 BLOCKED_AT: HassKey[dict[str, datetime]] = HassKey(f"{DOMAIN}_blocked_at")
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.DEVICE_TRACKER, Platform.EVENT, Platform.SENSOR]
+PLATFORMS = [
+    Platform.BINARY_SENSOR,
+    Platform.BUTTON,
+    Platform.DEVICE_TRACKER,
+    Platform.EVENT,
+    Platform.SENSOR,
+    Platform.UPDATE,
+]
 # The reads the coordinators use; each is checked against the device's API catalog once.
 GETTERS = (
     "get_utilization",
@@ -70,6 +77,7 @@ GETTERS = (
     "get_wifi_radio_status",
     "get_wifi_networks",
     "get_eth_port_info",
+    "get_mesh_nodes",
 )
 
 

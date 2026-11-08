@@ -35,6 +35,7 @@ APIS = (
     "SYNO.Wifi.Radio.Status",
     "SYNO.Wifi.Network.Setting",
     "SYNO.Mesh.Network.EthPortInfo",
+    "SYNO.Mesh.Node.List",
 )
 HOST, PORT = "192.0.2.1", 8000
 

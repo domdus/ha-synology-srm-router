@@ -22,6 +22,7 @@ from aiosynologysrm import (
     FirewallHitCount,
     FirewallRules,
     Ipv6Prefixes,
+    MeshNodes,
     NetworkDevices,
     SrmCertificateError,
     StorageVolumes,
@@ -72,6 +73,8 @@ class FakeClient:
         self.folder = "ap" if host == AP_HOST else "router"
         self.errors: dict[str, BaseException] = dict(ERRORS.get(host, {}))
         self.logged_in = False
+        self.logins = 0
+        self.posts: list[tuple[str, dict[str, str]]] = []
         FakeClient.instances.append(self)
 
     def _raise(self, name: str) -> None:
@@ -169,8 +172,39 @@ class FakeClient:
         self._raise("get_wifi_networks")
         return WifiNetworks.from_api(load(self.folder, "wifi_networks"))
 
+    async def get_mesh_nodes(self) -> MeshNodes:
+        self._raise("get_mesh_nodes")
+        return MeshNodes.from_api(MESH.get(self.host) or load(self.folder, "mesh_nodes"))
+
+    # The library's login and transport, which actions.py uses for its fixed requests.
+    async def _ensure_login(self, stale_sid: str | None = None) -> str:
+        self._raise("login")
+        self.logged_in = True
+        self.logins += 1
+        return f"sid-{self.logins}"
+
+    async def _post(self, cgi: str, data: dict[str, str]) -> Any:
+        self.posts.append((cgi, dict(data)))
+        queued = POSTS.get(self.host)
+        if queued:
+            answer = queued.pop(0)
+            if isinstance(answer, BaseException):
+                raise answer
+            return answer
+        if data["api"] == "SYNO.Core.Upgrade.Server":
+            return {"success": True, "data": {"available": False}}
+        return {"success": True}
+
+    @staticmethod
+    def _error_code(envelope: dict[str, Any]) -> int:
+        return int(envelope["error"]["code"])
+
 
 ERRORS: dict[str, dict[str, BaseException]] = {}
+# Answers to actions.py's requests, per host, in order; then the defaults in FakeClient._post.
+POSTS: dict[str, list[Any]] = {}
+# Mesh node lists per host instead of the fixture (which has the router only).
+MESH: dict[str, dict[str, Any]] = {}
 UNSUPPORTED: dict[str, set[str]] = {}
 FINGERPRINTS: dict[str, str] = {}  # a certificate other than FINGERPRINT, per host
 # Hosts whose certificate a public authority vouches for: its DNS names. Others are self-signed.
@@ -200,6 +234,8 @@ def fake_client() -> Generator[type[FakeClient]]:
     """Replace the library client and the fingerprint lookup."""
     FakeClient.instances = []
     ERRORS.clear()
+    POSTS.clear()
+    MESH.clear()
     UNSUPPORTED.clear()
     FINGERPRINTS.clear()
     TRUSTED.clear()

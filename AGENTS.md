@@ -6,9 +6,10 @@ Instructions for AI coding agents working on this repository. People should read
 ## What this is
 
 A Home Assistant custom integration (domain `synology_srm_router`) for Synology routers and
-access points running SRM. It reads only, through the library
-[aiosynologysrm](https://github.com/eizedev/aiosynologysrm); every call to the router goes through
-that library.
+access points running SRM. It reads through the library
+[aiosynologysrm](https://github.com/eizedev/aiosynologysrm). The only exceptions are the fixed
+requests in `actions.py` (restart, mesh node restart, firmware check), which use the library's
+private login and transport because it sends allowlisted reads only; the library is pinned.
 
 ## Commands
 
@@ -80,5 +81,6 @@ that minimum too; a test keeps them equal.
 ## Don'ts
 
 - Don't contact real devices from tests; use `tests/conftest.py`'s `FakeClient`.
-- Don't add write actions (services, switches, buttons that change the router).
+- Don't add write actions beyond the restarts in `actions.py` (no services, switches or buttons
+  that change a setting).
 - Don't edit `uv.lock` by hand.

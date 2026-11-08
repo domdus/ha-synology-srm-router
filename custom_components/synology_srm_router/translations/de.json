@@ -486,6 +486,19 @@
           }
         }
       }
+    },
+    "button": {
+      "restart": {
+        "name": "Neu starten"
+      },
+      "restart_node": {
+        "name": "{node} neu starten"
+      }
+    },
+    "update": {
+      "firmware": {
+        "name": "Firmware"
+      }
     }
   },
   "exceptions": {
@@ -506,6 +519,12 @@
     },
     "communication_error": {
       "message": "Gerät konnte nicht gelesen werden: {error}"
+    },
+    "restart_failed": {
+      "message": "Der Neustart konnte nicht gesendet werden: {error}"
+    },
+    "node_gone": {
+      "message": "SRM führt diesen Mesh-Punkt nicht mehr; starte stattdessen den Router neu."
     }
   },
   "issues": {

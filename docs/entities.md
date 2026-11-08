@@ -12,6 +12,8 @@
 | Clients | | online clients attached to this device, by Wi-Fi or cable |
 | Wi-Fi clients 2.4 GHz, Wi-Fi clients 5 GHz, Wired clients | | the same, by band and cable (all clients, also those without a tracker) |
 | Last boot | timestamp | diagnostic |
+| Restart | | button; restarts the router or access point (SRM's `SYNO.Core.System` restart). Stays available while reads fail. The network is down for a few minutes, Home Assistant's connection to the device too |
+| Firmware | | update entity: the installed SRM version and whether Synology offers a newer one. Asked through the device at most every 12 hours (after a failed check, again after an hour). Status only: install updates in SRM |
 | Load average (1, 5, 15 min) | | diagnostic, disabled by default |
 | *volume* used, *volume* free space | %, GB | per USB volume, by its name in SRM (else its folder); unavailable while the drive is not attached, and kept until you delete them |
 | *volume* size | GB | per USB volume; diagnostic, disabled by default |
@@ -35,6 +37,7 @@ library keeps only the fields it knows, so the passwords never reach Home Assist
 
 | Entity | Notes |
 | --- | --- |
+| Restart *node* | button per mesh satellite, by its name in SRM; restarts that mesh point only. The main router has none: use its Restart. Unavailable while SRM does not list the node |
 | WAN connection | connectivity |
 | Public IPv4 address | the address the internet sees, as SRM last recorded it (can be out of date) |
 | IPv6 address | the WAN interface's address, read live |

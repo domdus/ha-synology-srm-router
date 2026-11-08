@@ -486,6 +486,19 @@
           }
         }
       }
+    },
+    "button": {
+      "restart": {
+        "name": "Restart"
+      },
+      "restart_node": {
+        "name": "Restart {node}"
+      }
+    },
+    "update": {
+      "firmware": {
+        "name": "Firmware"
+      }
     }
   },
   "exceptions": {
@@ -506,6 +519,12 @@
     },
     "communication_error": {
       "message": "Could not read the device: {error}"
+    },
+    "restart_failed": {
+      "message": "The restart could not be sent: {error}"
+    },
+    "node_gone": {
+      "message": "SRM no longer lists this mesh point; restart the router instead."
     }
   },
   "issues": {

@@ -42,6 +42,9 @@ UPDATE_TIMEOUT: Final = 25
 REQUEST_TIMEOUT: Final = 10
 # After SRM's auto block, try to log in again this often (each attempt counts towards the block).
 BLOCKED_RETRY: Final = timedelta(minutes=15)
+# Synology's update server is asked this often; after a failure, again after FIRMWARE_RETRY.
+FIRMWARE_INTERVAL: Final = timedelta(hours=12)
+FIRMWARE_RETRY: Final = timedelta(hours=1)
 # A tracker keeps its last trusted location this long while the device it was on cannot be read.
 LOCATION_GRACE: Final = timedelta(minutes=10)
 

@@ -20,6 +20,7 @@ from aiosynologysrm import (
     FirewallRule,
     FirewallRules,
     Ipv6Prefixes,
+    MeshNodes,
     NetworkDevices,
     SrmAuthenticationError,
     SrmBlockedError,
@@ -28,6 +29,7 @@ from aiosynologysrm import (
     SrmError,
     SrmPermissionError,
     SrmTwoFactorRequiredError,
+    SrmUnsupportedError,
     StorageVolumes,
     SystemInfo,
     Topology,
@@ -48,6 +50,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
 
+from .actions import FirmwareCheck, check_firmware
 from .clients import Client, DhcpAddress, combine, dhcp_addresses
 from .const import (
     BLOCKED_RETRY,
@@ -61,6 +64,8 @@ from .const import (
     DEFAULT_SLOW_INTERVAL,
     DOCS_URL,
     DOMAIN,
+    FIRMWARE_INTERVAL,
+    FIRMWARE_RETRY,
     LOGGER,
     RECENTLY_SEEN,
     UPDATE_TIMEOUT,
@@ -122,6 +127,10 @@ class SlowData:
     """Every Wi-Fi network with its bands; the library keeps the Wi-Fi keys out of it."""
     rules: dict[str, FirewallRule] = field(default_factory=dict)
     """Firewall rules by a key from their content (see firewall.rule_keys), computed once."""
+    mesh: MeshNodes | None = None
+    """The router and its mesh points; satellites get a restart button."""
+    firmware: FirmwareCheck | None = None
+    """The last answer of Synology's update server, kept between checks."""
 
 
 # Optional reads of the slow coordinator: SlowData field, client getter, routers only.
@@ -138,6 +147,7 @@ SLOW_READS: tuple[tuple[str, str, bool], ...] = (
     ("radio_settings", "get_wifi_radio_settings", False),
     ("radio_status", "get_wifi_radio_status", False),
     ("wifi_networks", "get_wifi_networks", False),
+    ("mesh", "get_mesh_nodes", True),
 )
 
 
@@ -348,6 +358,7 @@ class SrmSlowCoordinator(DataUpdateCoordinator[SlowData]):
         self.supported = supported
         self.is_router = is_router
         self.failing: set[str] = set()
+        self.firmware_due: datetime | None = None
 
     async def _async_update_data(self) -> SlowData:
         try:
@@ -356,6 +367,7 @@ class SrmSlowCoordinator(DataUpdateCoordinator[SlowData]):
                 optional = await self._optional()
         except SrmError as err:
             raise map_error(err) from err
+        optional["firmware"] = await self._check_firmware()
         uptime = helpers.up_time(system.up_time)
         boot = None
         if uptime is not None:
@@ -393,6 +405,26 @@ class SrmSlowCoordinator(DataUpdateCoordinator[SlowData]):
             else getattr(self.data, field, None)
             for field, _, _ in SLOW_READS
         }
+
+    async def _check_firmware(self) -> FirmwareCheck | None:
+        """Ask Synology's update server at most every FIRMWARE_INTERVAL; keep the last answer."""
+        last = self.data.firmware if self.data else None
+        now = dt_util.utcnow()
+        if self.firmware_due is not None and now < self.firmware_due:
+            return last
+        try:
+            async with asyncio.timeout(UPDATE_TIMEOUT):
+                result = await check_firmware(self.client)
+        except SrmUnsupportedError:
+            self.firmware_due = datetime.max.replace(tzinfo=now.tzinfo)
+            LOGGER.info("%s does not offer a firmware check", self.config_entry.title)
+            return None
+        except (SrmError, TimeoutError) as err:
+            self.firmware_due = now + FIRMWARE_RETRY
+            LOGGER.debug("Firmware check failed: %s", type(err).__name__)
+            return last
+        self.firmware_due = now + FIRMWARE_INTERVAL
+        return result
 
     def _update_device(self, system: SystemInfo) -> None:
         """Keep the device registry's firmware version current after an update."""

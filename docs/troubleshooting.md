@@ -35,7 +35,9 @@ no addresses, names, passwords or the certificate fingerprint. Attach them to a 
   database and IP block list.
 - SRM keeps clients it saw long ago; *Show all known clients* lists them, the default list does not.
 - Mesh setups are untested; the integration was developed with a router and a standalone access
-  point. Reports are welcome.
+  point. Reports are welcome. The mesh restart follows the request SRM's own web interface sends.
+- A restart counts as sent when SRM confirms it or drops the connection after taking the request;
+  a device that cannot be reached at all gives an error.
 - Wired clients behind an access point's LAN port appear on the router.
 - The public IPv4 address is what SRM last recorded; it can lag behind a change.
 

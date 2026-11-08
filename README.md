@@ -11,8 +11,12 @@
 
 Shows your **Synology routers and access points** (SRM) in Home Assistant: load, traffic, WAN,
 clients per Wi-Fi band, DHCP, firewall rules with their hits, USB storage, and device trackers that
-tell which router or access point, and which radio, a client is connected to. Read only: it never
-changes a setting.
+tell which router or access point, and which radio, a client is connected to.
+
+> **This is a fork** of [eizedev/ha-synology-srm-router](https://github.com/eizedev/ha-synology-srm-router)
+> that adds what Synology DSM offers for a NAS: a **Restart** button for every router and access
+> point, one per mesh satellite, and a **Firmware** update entity. Those restarts are the only
+> requests that change anything; every other setting is only read, as upstream.
 
 [![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=eizedev&repository=ha-synology-srm-router&category=integration)
 [![Open your Home Assistant instance and start setting up the integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=synology_srm_router)
@@ -50,15 +54,17 @@ changes a setting.
 
 ## Install
 
-In HACS, search for **Synology SRM Router** (or use the button above), install it and restart
-Home Assistant.
+In HACS, open the three dots, *Custom repositories*, and add
+`https://github.com/domdus/ha-synology-srm-router` as type *Integration*. Then open it, download
+it and restart Home Assistant. (Searching HACS for *Synology SRM Router* finds upstream, without
+the restart buttons; install one or the other, they share the domain.)
 
 Then add the integration once per router and per access point, router first; Home Assistant
 also finds them on the network and offers them. Requires Home
 Assistant 2026.10.3 or newer. Details: [Installation](https://ha-synology-srm-router.eize.dev/installation/).
 
 Without HACS: download `synology_srm_router.zip` from the
-[latest release](https://github.com/eizedev/ha-synology-srm-router/releases/latest) and unpack it
+[latest release](https://github.com/domdus/ha-synology-srm-router/releases/latest) and unpack it
 into `custom_components/synology_srm_router/` in your Home Assistant configuration
 ([details](https://ha-synology-srm-router.eize.dev/installation/#without-hacs)).
 

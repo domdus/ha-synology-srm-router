@@ -6,7 +6,7 @@ hide:
 
 <div class="hero" markdown>
 
-<p class="hero-kicker">Home Assistant · HACS · read only</p>
+<p class="hero-kicker">Home Assistant · HACS · restart on request</p>
 
 # Synology SRM Router
 
@@ -52,7 +52,8 @@ hide:
 - Checked certificates: a certificate from a public authority (such as Let's Encrypt) is checked
   by its name, so renewals need nothing; SRM's own certificate is shown once for you to confirm,
   then trusted exactly.
-- It only reads: the integration never changes a setting in SRM.
+- It only reads, with one exception: the Restart buttons restart a device or mesh point when
+  you press them. No setting in SRM is ever changed.
 
 Built on [aiosynologysrm](https://aiosynologysrm.eize.dev/).
 

@@ -6,6 +6,25 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-08
+
+### Added
+
+- Restart button for every router and access point, as Synology DSM has one for a NAS
+  (`SYNO.Core.System` `reboot`, version 1). It stays available while reads fail. A connection that
+  the device drops after taking the request counts as a sent restart; one that never comes up is
+  an error.
+- Restart button per mesh satellite on routers (`SYNO.Mesh.System` `reboot` with the node's id),
+  named after the node in SRM; routers now read their mesh node list with the slow update.
+- Firmware update entity: the installed SRM version and whether Synology offers a newer one
+  (`SYNO.Core.Upgrade.Server` `check`), asked at most every 12 hours. Status only.
+
+### Changed
+
+- The integration is no longer read only: the restart buttons are its only requests that change
+  anything. They go through the library's login and transport (`actions.py`), since the library
+  sends allowlisted reads only.
+
 ## [0.5.1] - 2026-11-02
 
 ### Changed
@@ -186,7 +205,8 @@ All notable changes to this project are documented here. The format follows
 - Each Home Assistant installation logs in under its own session name, so its sessions can be told
   apart in SRM.
 
-[Unreleased]: https://github.com/eizedev/ha-synology-srm-router/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/domdus/ha-synology-srm-router/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/domdus/ha-synology-srm-router/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/eizedev/ha-synology-srm-router/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/eizedev/ha-synology-srm-router/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/eizedev/ha-synology-srm-router/compare/v0.3.0...v0.4.0
